@@ -1,23 +1,34 @@
-import pdfplumber
-import re
+from class_fatura import Fatura
+from pathlib import Path
+from time import sleep
 
-n_line = 0
-pdf_fatura = r"C:\Users\rafae\Downloads\Energisa_2026-05_1.955.050.017-62.pdf"
-pdf_fatura2 = r"C:\Users\rafae\Downloads\Energisa_2026-05_1.769.293.017-27.pdf"
+pdfs_pasta = r"C:\Users\rafae\Downloads\pdfs_fatura"
 
-
-with pdfplumber.open(pdf_fatura) as pdf:
-    first_page = pdf.pages[0]
-    texto = first_page.extract_text(layout=True)
-    words = first_page.extract_words()
+dir_path = Path(pdfs_pasta)
+path_files = list(dir_path.glob("*.pdf"))
 
 
-    # for w in words:
-    #     if  len(w['text']) == 8 and 178 <= w['top'] <= 186:
-    #         cep = w['text']
-    # print(cep)
+def pdfs(pdfs):
+    print("Todos os pdfs listados:")
+    for num, pdf in enumerate(pdfs, 1):
+        print(f"{num}) {pdf.stem}")
+    print(f"total de pdfs: {len(pdfs)}")
+    while True:
+        try:
+            pdf_escolhido = int(input("Visualizar pdf: "))
+            return str(pdfs[pdf_escolhido - 1])
+        except ValueError:
+            print("Este comando é inválido")
+        except IndexError:
+            print("Nao existe nenhum pdf nesta posiçao")
+        sleep(1)
+        print("tente novamente")
 
+pdf_escolhido = pdfs(path_files)
+print(f"Gerando informaçoes do Pdf: {pdf_escolhido}")
+sleep(1)
 
-
-
-
+fatura = Fatura(pdf_escolhido)
+print(fatura.nome_cliente())
+print(fatura.numero_uc())
+print(fatura.itens_fatura())
