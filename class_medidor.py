@@ -1,7 +1,8 @@
 
 class Medidor:
-    def __init__(self, pdf):
-        self.__numero_medidor = pdf.extrair_numero_medidor()
+    def __init__(self, medidor):
+        self.__numero_medidor = medidor
+
 
         tabela = pdf.extrair_tabela_medidor()
         self.__sumarios_eletricos = []

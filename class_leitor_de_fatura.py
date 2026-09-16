@@ -132,7 +132,7 @@ class PdfReader:
         return tuple(leituras.values())
 
     _PALAVRAS_CHAVES = ["PIS", "COFINS", "ICMS"]
-    def tributos(self):
+    def extrair_tributos(self):
         palavras =  self.pdf_words_type2
         possiveis_tributos = []
 
@@ -145,9 +145,20 @@ class PdfReader:
 
         tributos_info = {}
         for tributo in tributos_loc:
-            tributos_val = []
+            tributos_val = [tributo[4]]
             for p in palavras:
                 if abs(p[1] - tributo[1]) <= 3 and p[0] > tributo[2]:
                     tributos_val.append(p[4])
             tributos_info[tributo[4]] = tributos_val
         return tributos_info
+
+    def valores_fatura(self):
+        texto = self.pdf_text
+        match = re.search(r'([A-Za-zÀ-ÿ]+\s*/\s*\d{4})\s+(\d{2}/\d{2}/\d{4})\s+R\$\s*([\d.]+,\d{2})', texto)
+        if match:
+            valores_fat = {
+                "MES_REF": match.group(1),
+                "VENCIMENTO": match.group(2),
+                "PAGAR": match.group(3)
+            }
+            return  valores_fat
