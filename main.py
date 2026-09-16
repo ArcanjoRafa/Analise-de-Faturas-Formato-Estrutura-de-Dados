@@ -29,6 +29,9 @@ print(f"Gerando informaçoes do Pdf: {pdf_escolhido}")
 sleep(1)
 
 fatura = Fatura(pdf_escolhido)
-print(fatura.nome_cliente())
-print(fatura.numero_uc())
-print(fatura.itens_fatura())
+
+def verifica_cpf(cpf):
+    return 0
+
+print(verifica_cpf(fatura.cpf_cnpj()))
+

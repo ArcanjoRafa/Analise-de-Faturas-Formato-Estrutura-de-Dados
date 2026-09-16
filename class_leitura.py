@@ -1,19 +1,39 @@
-import re
 
 class Leitura:
-    _NOMES_LEITURAS = ['leitura anterior:', 'leitura atual:', 'n dias:', 'proxima leitura:']
-
     def __init__(self, pdf):
-        self.pdf = pdf
+        leitura_anterior, leitura_atual, dias, proxima_leitura = pdf.extrair_leituras()
+        self.__leitura_anterior = leitura_anterior
+        self.__leitura_atual = leitura_atual
+        self.__dias = dias
+        self.__proxima_leitura = proxima_leitura
 
-    def leituras(self):
-        leituras = {}
+    @property
+    def leitura_anterior(self):
+        return self.__leitura_anterior
+    @leitura_anterior.setter
+    def leitura_anterior(self, valor_leitura_anterior):
+        self.__leitura_anterior = valor_leitura_anterior
 
-        texto = self.pdf.pdf_text(0)
-        match = re.search(r"\d{2}/\d{2}/\d{4}\s+\d{2}/\d{2}/\d{4}\s+\d+\s+\d{2}/\d{2}/\d{4}", texto)
+    @property
+    def leitura_atual(self):
+        return self.__leitura_atual
 
-        if match:
-            leituras_dados = match.group(0).split()
-            for leitura, dado  in zip(Leitura._NOMES_LEITURAS, leituras_dados):
-                leituras[leitura] = dado
-        return leituras
+    @leitura_atual.setter
+    def leitura_atual(self, valor_leitura_atual):
+        self.__leitura_atual = valor_leitura_atual
+
+    @property
+    def dias(self):
+        return self.__dias
+
+    @dias.setter
+    def dias(self, valor_dias):
+        self.__dias = valor_dias
+
+    @property
+    def proxima_leitura(self):
+        return self.__proxima_leitura
+
+    @proxima_leitura.setter
+    def proxima_leitura(self, valor_proxima_leitura):
+        self.__proxima_leitura = valor_proxima_leitura

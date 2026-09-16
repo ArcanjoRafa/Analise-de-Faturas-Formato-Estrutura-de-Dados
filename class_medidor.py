@@ -1,42 +1,75 @@
 
 class Medidor:
-    _MED_LOC = (39.0, 579.5043334960938, 69.36003112792969, 584.4683227539062)
-    _LINHA_RESERVADO = 7
     def __init__(self, pdf):
-        self.pdf_words = pdf.pdf_words_type2(0)
+        self.__numero_medidor = pdf.extrair_numero_medidor()
+
+        tabela = pdf.extrair_tabela_medidor()
+        self.__sumarios_eletricos = []
+        for linha in tabela:
+            sumario = SumarioEletrico(linha[1], linha[2], linha[3], linha[4], linha[5])
+            self.__sumarios_eletricos.append(sumario)
+
+    @property
+    def numero_medidor(self):
+        return self.__numero_medidor
+
+    @numero_medidor.setter
+    def numero_medidor(self, valor):
+        self.__numero_medidor = valor
+
+    @property
+    def sumarios_eletricos(self):
+        return self.__sumarios_eletricos
+
+    @sumarios_eletricos.setter
+    def sumarios_eletricos(self, valor):
+        self.__sumarios_eletricos = valor
 
 
-    def __medidor_info(self):
-        palavras = self.pdf_words
-        for p in palavras:
-            if abs(p[1] - self._MED_LOC[1]) <= 3 and abs(p[0] - self._MED_LOC[0]) <= 3:
-                medidor_group = p[5]
-                medidor = p[4]
-                return {"medidor": medidor, "grupo": medidor_group}
+class SumarioEletrico:
+    def __init__(self, posto_horario, leitura_anterior, leitura_atual, const_medidor, consumo_kwh):
+        self.__posto_horario = posto_horario
+        self.__leitura_anterior = leitura_anterior
+        self.__leitura_atual = leitura_atual
+        self.__const_medidor = const_medidor
+        self.__consumo_kwh = consumo_kwh
 
-    def __valores(self):
-        info_medidor = self.__medidor_info()
-        medidor_grupo = info_medidor["grupo"]
-        medidor = info_medidor["medidor"]
-        palavras = self.pdf_words
-        medidor_valores = []
-        for p in palavras:
-            if p[5] == medidor_grupo:
-                if p[6] != Medidor._LINHA_RESERVADO:
-                    if p[7] != 0:
-                        medidor_valores[-1] += ' ' + p[4]
-                    else:
-                        if p[4] != medidor:
-                            medidor_valores.append(p[4])
-        return medidor_valores
+    @property
+    def posto_horario(self):
+        return self.__posto_horario
 
-    def tabela_de_valores(self):
-        valores = self.__valores()
-        tabela = []
-        inicio = 0
-        final = 6
-        for _ in range(0, len(valores), 6):
-            tabela.append(valores[inicio: final])
-            inicio = final
-            final += 6
-        return tabela
+    @posto_horario.setter
+    def posto_horario(self, valor_posto_horario):
+        self.__posto_horario = valor_posto_horario
+
+    @property
+    def leitura_anterior(self):
+        return self.__leitura_anterior
+
+    @leitura_anterior.setter
+    def leitura_anterior(self, valor_leitura_anterior):
+        self.__leitura_anterior = valor_leitura_anterior
+
+    @property
+    def leitura_atual(self):
+        return self.__leitura_atual
+
+    @leitura_atual.setter
+    def leitura_atual(self, valor_leitura_atual):
+        self.__leitura_atual = valor_leitura_atual
+
+    @property
+    def const_medidor(self):
+        return self.__const_medidor
+
+    @const_medidor.setter
+    def const_medidor(self, valor_const_medidor):
+        self.__const_medidor = valor_const_medidor
+
+    @property
+    def consumo_kwh(self):
+        return self.__consumo_kwh
+
+    @consumo_kwh.setter
+    def consumo_kwh(self, valor_consumo_kwh):
+        self.__consumo_kwh = valor_consumo_kwh

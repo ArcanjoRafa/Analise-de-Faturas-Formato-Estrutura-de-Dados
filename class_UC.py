@@ -1,40 +1,29 @@
-import re
-
 class UC:
     def __init__(self, pdf):
-        self.pdf = pdf
+        self._uc = pdf.extrair_uc()
+        self._endereco = pdf.extrair_endereco()
+        self._cep = pdf.extrair_cep()
 
-    def _dados_UC(self):
-        texto = self.pdf.pdf_text(0)
-        match = re.search(r"\d+\.\d+\.\d+(?:\.\d+)?-\d{2}", texto)
-        if match:
-            numero_uc = match.group(0)
-            dados_UC = next(w for w in self.pdf.pdf_words(0) if w['text'] == numero_uc)
-            return dados_UC
-
-    # UC
+    @property
     def uc(self):
-         return self._dados_UC()['text']
+        return self._uc
 
+    @uc.setter
+    def uc(self, valor_uc):
+        self._uc = valor_uc
 
-class Endereco:
-    def __init__(self, pdf):
-        self.pdf = pdf
-        self.__uc = UC(self.pdf)
-
+    @property
     def endereco(self):
-        dados_uc = self.__uc._dados_UC()
-        end = [w['text'] for w in self.pdf.pdf_words(0) if dados_uc['top'] < w['top']
-               <= dados_uc['top'] + 8 and w['x1'] < dados_uc['x0']]
-        endereco = ' '.join(end)
-        return endereco
+        return self._endereco
 
-        # cep
+    @endereco.setter
+    def endereco(self, valor_endereco):
+        self._endereco = valor_endereco
 
+    @property
     def cep(self):
-        possiveis_ceps = []
-        for w in self.pdf.pdf_words(0):
-            if len(w['text']) == 8 and 178 <= w['top'] <= 186:
-                possiveis_ceps.append(w)
-        cep = possiveis_ceps[-1]['text']
-        return cep
+        return self._cep
+
+    @cep.setter
+    def cep(self, valor_cep):
+        self._cep = valor_cep

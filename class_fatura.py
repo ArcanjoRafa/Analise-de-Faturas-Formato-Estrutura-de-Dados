@@ -67,3 +67,6 @@ class Fatura:
     # tributos
     def tributos(self):
         return self.__tributos_val.tributos()
+
+    def cpf_cnpj(self):
+        return self.__cliente.cpf_cnpj()
