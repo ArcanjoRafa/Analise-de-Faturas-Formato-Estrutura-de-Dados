@@ -1,4 +1,5 @@
 from class_fatura import Fatura
+from class_leitor_de_fatura import PdfReader
 from pathlib import Path
 from time import sleep
 
@@ -30,8 +31,8 @@ sleep(1)
 
 fatura = Fatura(pdf_escolhido)
 
-def verifica_cpf(cpf):
-    return 0
-
-print(verifica_cpf(fatura.cpf_cnpj()))
+print(fatura.valores_fatura)
+print(fatura.sumarios_eletricos)
+print(fatura.itens_fatura)
+print(fatura.uc.cep)
 

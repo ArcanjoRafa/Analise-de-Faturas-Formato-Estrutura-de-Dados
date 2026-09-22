@@ -23,8 +23,9 @@ class PdfReader:
             first_page = pdf.pages[page]
             return first_page.extract_text()
 
-    def formato(self):
-        with fitz.open(self._pdf) as pdf:
+    @staticmethod
+    def formato(pdf):
+        with fitz.open(pdf) as pdf:
             tamanho = pdf[0].rect.width
 
         return "B" if tamanho > 600 else "A"
@@ -48,14 +49,14 @@ class PdfReader:
         endereco = ' '.join(end)
         return endereco
 
-
     def extrair_cep(self):
         possiveis_ceps = []
         for w in self.pdf_words:
-            if len(w['text']) == 8 and 178 <= w['top'] <= 186:
+            if len(w['text']) == 8 and 175 <= w['top'] <= 195:
                 possiveis_ceps.append(w)
-        cep = possiveis_ceps[-1]['text']
-        return cep
+        if not possiveis_ceps:
+            return ""
+        return possiveis_ceps[-1]['text']
 
     _LOC_CLIENTE = {"x0": 50.040000915527344, "y0": 162.30575561523438}
     def __client_group(self):
@@ -150,9 +151,9 @@ class PdfReader:
                 if abs(p[1] - tributo[1]) <= 3 and p[0] > tributo[2]:
                     tributos_val.append(p[4])
             tributos_info[tributo[4]] = tributos_val
-        return tributos_info
+        return tuple(tributos_info.values())
 
-    def valores_fatura(self):
+    def extrair_valores_fatura(self):
         texto = self.pdf_text
         match = re.search(r'([A-Za-zÀ-ÿ]+\s*/\s*\d{4})\s+(\d{2}/\d{2}/\d{4})\s+R\$\s*([\d.]+,\d{2})', texto)
         if match:
@@ -161,7 +162,7 @@ class PdfReader:
                 "VENCIMENTO": match.group(2),
                 "PAGAR": match.group(3)
             }
-            return valores_fat
+            return tuple(valores_fat.values())
 
 
     def __loc_total(self):
@@ -169,12 +170,12 @@ class PdfReader:
             if word[4] == "TOTAL:":
                 return word
 
-    def total(self):
+    def extrair_total(self):
         palavras = self.pdf_words_type2
         valores_totais = [p[4] for p in palavras if abs(p[1] - self.__loc_total()[1]) <= 3]
         return valores_totais
 
-    def itens_fatura(self):
+    def extrair_itens_fatura(self):
         palavras = self.pdf_words_type2
 
         for p in palavras:

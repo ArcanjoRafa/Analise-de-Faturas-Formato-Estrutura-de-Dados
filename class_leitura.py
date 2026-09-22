@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 
-
 @dataclass
 class Leitura:
     leitura_anterior: str

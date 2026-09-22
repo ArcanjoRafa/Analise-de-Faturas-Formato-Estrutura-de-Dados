@@ -1,12 +1,31 @@
-import fitz
 from class_leitor_de_fatura import PdfReader
 
-pdf = r"C:\Users\rafae\Downloads\Energisa_2026-05_1.769.293.017-27.pdf"
+class PdfReaderFormatoB(PdfReader):
+    _LOC_CLIENTE = {"x0": 15.720000267028809, "y0": 82.96173095703125}
+    _MED_LOC = (20.15999984741211, 577.8538208007812)
+    _PALAVRAS_CHAVES = ["PIS/PASEP", "COFINS", "ICMS"]
 
-with fitz.open(pdf) as pdf:
-    pdf_words = pdf[0].get_text("words", sort=True)
+    _ENDERECO_LOC = {"x0": 15.0, "y0": 99.90929412841797}
+    _UC_LOC = {"x0": 188.63999938964844, "y0": 108.62928009033203}
 
-class ItensDaFaturaFormatoB:
+    def __encontrando_valores(self):
+        cep = ""
+        endereco = ""
+        pdf_words = self.pdf_words_type2
+        for word in pdf_words:
+            if abs(word[1] - self._ENDERECO_LOC["y0"]) <= 5 and word[2] < self._UC_LOC["x0"]:
+                if word[6] == 0:
+                    endereco += word[4] + " "
+                if word[6] == 1:
+                    cep += word[4] + " "
+        return {"endereco": endereco, "cep": cep}
+
+    def extrair_endereco(self):
+        return self.__encontrando_valores()["endereco"]
+
+    def extrair_cep(self):
+        return self.__encontrando_valores()["cep"]
+
     _ITENS_DA_FATURA_LOC = {"x0": 7.920000076293945, "y0": 384.27130126953125}
     _TOTAL_LOC = {"x0": 133.1999969482422, "y0": 470.25909423828125}
 
@@ -23,18 +42,15 @@ class ItensDaFaturaFormatoB:
         "tarifa_unit": (258.4, 999),
     }
     _ORDEM_COLUNAS = ["titulo", "unid", "quant", "preco_unit", "valor",
-                       "pis_cofins", "base_calc_icms", "aliq_icms", "icms", "tarifa_unit"]
+                      "pis_cofins", "base_calc_icms", "aliq_icms", "icms", "tarifa_unit"]
 
-    def __init__(self, pdf):
-        self.pdf = pdf
-
-    def total(self):
-        pdf_words = self.pdf
+    def extrair_total(self):
+        pdf_words = self.pdf_words_type2
         return [w[4] for w in pdf_words
                 if abs(w[1] - self._TOTAL_LOC["y0"]) <= 3 and w[0] > self._TOTAL_LOC["x0"]]
 
     def __lista_de_itens(self):
-        pdf_words = self.pdf
+        pdf_words = self.pdf_words_type2
         return [w for w in pdf_words
                 if w[1] > self._ITENS_DA_FATURA_LOC["y0"] + 3 and w[1] < self._TOTAL_LOC["y0"] - 3]
 
@@ -60,7 +76,7 @@ class ItensDaFaturaFormatoB:
             itens.append(atual)
         return itens
 
-    def itens_fatura(self):
+    def extrair_itens_fatura(self):
         palavras = self.__lista_de_itens()
 
         linhas = {}
@@ -83,9 +99,3 @@ class ItensDaFaturaFormatoB:
             dados_fatura.append([linha[c].strip() for c in self._ORDEM_COLUNAS])
 
         return self.__merge_linhas(dados_fatura)
-
-
-
-
-itensf = ItensDaFaturaFormatoB(pdf_words)
-print(itensf.itens_fatura())

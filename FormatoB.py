@@ -1,4 +1,4 @@
-from class_tributos import Tributos
+from class_tributos import Tributo
 from class_cliente import Cliente
 from class_leitor_de_fatura import PdfReader
 from class_medidor import Medidor
@@ -35,7 +35,7 @@ class EnderecoFormatoB:
         return self.__encontrando_valores()["cep"]
 
 
-class TributosFormatoB(Tributos):
+class TributosFormatoB(Tributo):
     _PALAVRAS_CHAVES = ["PIS/PASEP", "COFINS", "ICMS"]
 
 

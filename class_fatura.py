@@ -1,72 +1,40 @@
 from class_cliente import Cliente
-from class_UC import Endereco, UC
+from class_UC import UnidadeConsumidora
 from class_valores_fatura import ValoresFatura
 from class_leitura import Leitura
-from class_itensdafatura import ItensDaFatura
-from class_medidor import Medidor
-from class_tributos import Tributos
+from class_itensdafatura import ItemDaFatura
+from class_medidor import Medidor, SumarioEletrico
+from class_tributos import Tributo
 from class_leitor_de_fatura import PdfReader
-from FormatoB import ClienteFormatoB, MedidorFormatoB, TributosFormatoB, EnderecoFormatoB, ItensDaFaturaFormatoB
+from class_leitor_de_fatura_formatoB import PdfReaderFormatoB
+
 
 class Fatura:
     def __init__(self, pdf):
-        self.__pdf = PdfReader(pdf)
-        formato = self.__pdf.formato()
+        formato = PdfReader.formato(pdf)
         if formato == "A":
-            self.__cliente = Cliente(self.__pdf)
-            self.__campo_endereco = Endereco(self.__pdf)
-            self.__itens_da_fatura = ItensDaFatura(self.__pdf)
-            self.__medidor_val = Medidor(self.__pdf)
-            self.__tributos_val = Tributos(self.__pdf)
+            self.pdf = PdfReader(pdf)
         else:
-            self.__cliente = ClienteFormatoB(self.__pdf)
-            self.__campo_endereco = EnderecoFormatoB(self.__pdf)
-            self.__itens_da_fatura = ItensDaFaturaFormatoB(self.__pdf)
-            self.__medidor_val = MedidorFormatoB(self.__pdf)
-            self.__tributos_val = TributosFormatoB(self.__pdf)
-        self.__uc = UC(self.__pdf)
-        self.__valores = ValoresFatura(self.__pdf)
-        self.__leituras_fat = Leitura(self.__pdf)
+            self.pdf = PdfReaderFormatoB(pdf)
 
-    # nome do cliente
-    def nome_cliente(self):
-        return self.__cliente.cliente()
+        nome_cliente = self.pdf.extrair_nome_cliente()
+        cpf_cnpj = self.pdf.extrair_cpf_cnpj()
+        valor_endereco = self.pdf.extrair_endereco()
+        valor_cep = self.pdf.extrair_cep()
+        valor_uc = self.pdf.extrair_uc()
+        leitura_anterior, leitura_atual, dias, proxima_leitura = self.pdf.extrair_leituras()
+        pis, cofins, icms = self.pdf.extrair_tributos()
+        valor_medidor = self.pdf.extrair_numero_medidor()
+        mes_ref, vencimento, pagar = self.pdf.extrair_valores_fatura()
+        tabela = self.pdf.extrair_tabela_medidor()
+        itens = self.pdf.extrair_itens_fatura()
 
-    # numero da uc
-    def numero_uc(self):
-        return self.__uc.uc()
 
-    # endereco
-    def endereco(self):
-        return self.__campo_endereco.endereco()
-
-    # cep
-    def numero_cep(self):
-        return self.__campo_endereco.cep()
-
-    # valores da fatura
-    def valores_da_fatura(self):
-        return self.__valores.valores_fatura()
-
-    # leituras
-    def leituras(self):
-        return  self.__leituras_fat.leituras()
-
-    # itens da fatura
-    def itens_fatura(self):
-        return self.__itens_da_fatura.itens_fatura()
-
-    # valor total dos intes da fatura
-    def itens_total(self):
-        return self.__itens_da_fatura.total()
-
-    # medidor
-    def medidor(self):
-        return self.__medidor_val.tabela_de_valores()
-
-    # tributos
-    def tributos(self):
-        return self.__tributos_val.tributos()
-
-    def cpf_cnpj(self):
-        return self.__cliente.cpf_cnpj()
+        self.cliente = Cliente(nome_cliente, cpf_cnpj)
+        self.uc = UnidadeConsumidora(valor_uc, valor_endereco, valor_cep)
+        self.leitura = Leitura(leitura_anterior, leitura_atual, dias, proxima_leitura)
+        self.tributos = [Tributo(*pis), Tributo(*cofins), Tributo(*icms)]
+        self.medidor = Medidor(valor_medidor)
+        self.sumarios_eletricos = [SumarioEletrico(*linha) for linha in tabela]
+        self.valores_fatura = ValoresFatura(mes_ref, vencimento, pagar)
+        self.itens_fatura = [ItemDaFatura(*item) for item in itens]
