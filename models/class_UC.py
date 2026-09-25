@@ -4,5 +4,5 @@ class UnidadeConsumidora:
     numero_uc : str
     endereco : str
     cep : str
-
+    id: int = None
 

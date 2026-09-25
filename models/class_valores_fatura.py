@@ -5,4 +5,4 @@ class ValoresFatura:
     mes_ref: str
     vencimento: str
     pagar: str
-
+    id: int = None

@@ -6,5 +6,5 @@ class Leitura:
     leitura_atual: str
     dias: str
     proxima_leitura: str
-
+    id: int = None
 

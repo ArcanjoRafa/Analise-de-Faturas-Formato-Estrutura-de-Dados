@@ -12,6 +12,7 @@ class ItemDaFatura:
        aliq_icms : str
        icms : str
        tarifa_unit : str
+       id: int = None
 
 
 @dataclass
@@ -20,3 +21,4 @@ class ItensTotal:
        pis_cofins : str
        base_calc_icms : str
        icms : str
+       id: int = None

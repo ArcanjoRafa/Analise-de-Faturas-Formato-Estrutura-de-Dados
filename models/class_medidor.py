@@ -12,4 +12,4 @@ class SumarioEletrico:
     leitura_atual : str
     const_medidor : str
     consumo_kwh : str
-
+    id: int = None

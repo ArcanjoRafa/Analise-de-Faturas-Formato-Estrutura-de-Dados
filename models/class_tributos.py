@@ -5,7 +5,7 @@ class Tributo:
     base_calc: str
     aliquota: str
     valor: str
-
+    id: int = None
 
 
 

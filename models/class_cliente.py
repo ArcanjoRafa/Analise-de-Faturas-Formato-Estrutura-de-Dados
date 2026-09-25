@@ -3,3 +3,4 @@ from dataclasses import dataclass
 class Cliente:
         nome_cliente : str
         cpf_cnpj : str
+        id: int = None
