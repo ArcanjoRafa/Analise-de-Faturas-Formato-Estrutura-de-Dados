@@ -1,10 +1,10 @@
 from models.class_cliente import Cliente
-from class_UC import UnidadeConsumidora
-from class_valores_fatura import ValoresFatura
-from class_leitura import Leitura
-from class_itensdafatura import ItemDaFatura
-from class_medidor import Medidor, SumarioEletrico
-from class_tributos import Tributo
+from models.class_UC import UnidadeConsumidora
+from models.class_valores_fatura import ValoresFatura
+from models.class_leitura import Leitura
+from models.class_itensdafatura import ItemDaFatura
+from models.class_medidor import Medidor, SumarioEletrico
+from models.class_tributos import Tributo
 from extractors.class_leitor_de_fatura import PdfReader
 from extractors.class_leitor_de_fatura_formatoB import PdfReaderFormatoB
 import logging
