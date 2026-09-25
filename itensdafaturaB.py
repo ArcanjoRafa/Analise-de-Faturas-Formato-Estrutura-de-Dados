@@ -1,5 +1,4 @@
 import fitz
-from class_leitor_de_fatura import PdfReader
 
 pdf = r"C:\Users\rafae\Downloads\Energisa_2026-05_1.769.293.017-27.pdf"
 

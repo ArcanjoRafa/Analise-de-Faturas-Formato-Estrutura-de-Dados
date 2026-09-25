@@ -1,12 +1,14 @@
-from class_cliente import Cliente
+from models.class_cliente import Cliente
 from class_UC import UnidadeConsumidora
 from class_valores_fatura import ValoresFatura
 from class_leitura import Leitura
 from class_itensdafatura import ItemDaFatura
 from class_medidor import Medidor, SumarioEletrico
 from class_tributos import Tributo
-from class_leitor_de_fatura import PdfReader
-from class_leitor_de_fatura_formatoB import PdfReaderFormatoB
+from extractors.class_leitor_de_fatura import PdfReader
+from extractors.class_leitor_de_fatura_formatoB import PdfReaderFormatoB
+import logging
+logging.basicConfig(level=logging.WARNING)
 
 
 class Fatura:
@@ -35,6 +37,13 @@ class Fatura:
         self.leitura = Leitura(leitura_anterior, leitura_atual, dias, proxima_leitura)
         self.tributos = [Tributo(*pis), Tributo(*cofins), Tributo(*icms)]
         self.medidor = Medidor(valor_medidor)
-        self.sumarios_eletricos = [SumarioEletrico(*linha) for linha in tabela]
+        self.sumarios_eletricos = []
+        for linha in tabela:
+            if len(linha) < 6:
+                linha[-1] = tabela[-2][-2]
+                logging.warning(f"Sumário elétrico incompleto, campo(s) faltando: {linha}")
+                linha = linha + [None] * (6 - len(linha))
+            sumario = SumarioEletrico(*linha)
+            self.sumarios_eletricos.append(sumario)
         self.valores_fatura = ValoresFatura(mes_ref, vencimento, pagar)
         self.itens_fatura = [ItemDaFatura(*item) for item in itens]

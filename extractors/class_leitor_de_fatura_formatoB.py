@@ -1,4 +1,4 @@
-from class_leitor_de_fatura import PdfReader
+from extractors.class_leitor_de_fatura import PdfReader
 
 class PdfReaderFormatoB(PdfReader):
     _LOC_CLIENTE = {"x0": 15.720000267028809, "y0": 82.96173095703125}

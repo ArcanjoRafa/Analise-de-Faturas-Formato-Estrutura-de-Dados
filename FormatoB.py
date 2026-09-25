@@ -1,7 +1,6 @@
-from class_tributos import Tributo
-from class_cliente import Cliente
-from class_leitor_de_fatura import PdfReader
-from class_medidor import Medidor
+from models.class_tributos import Tributo
+from models.class_cliente import Cliente
+from models.class_medidor import Medidor
 
 class ClienteFormatoB(Cliente):
     _LOC_CLIENTE = {"x0": 15.720000267028809, "y0": 82.96173095703125}

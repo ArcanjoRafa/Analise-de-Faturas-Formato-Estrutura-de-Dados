@@ -14,3 +14,9 @@ class ItemDaFatura:
        tarifa_unit : str
 
 
+@dataclass
+class ItensTotal:
+       valor: str
+       pis_cofins : str
+       base_calc_icms : str
+       icms : str

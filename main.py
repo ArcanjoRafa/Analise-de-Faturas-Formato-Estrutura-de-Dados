@@ -1,5 +1,4 @@
-from class_fatura import Fatura
-from class_leitor_de_fatura import PdfReader
+from models.class_fatura import Fatura
 from pathlib import Path
 from time import sleep
 
@@ -31,8 +30,24 @@ sleep(1)
 
 fatura = Fatura(pdf_escolhido)
 
-print(fatura.valores_fatura)
-print(fatura.sumarios_eletricos)
-print(fatura.itens_fatura)
-print(fatura.uc.cep)
 
+print(f"{fatura.cliente.nome_cliente}.............................................................................. "
+f"{fatura.leitura.leitura_anterior} {fatura.leitura.leitura_atual} {fatura.leitura.dias} {fatura.leitura.proxima_leitura}\n")
+print(f"{fatura.uc.endereco} - {fatura.uc.cep}............... {fatura.uc.numero_uc}\n")
+print(f"{fatura.cliente.cpf_cnpj}\n")
+print(f"{fatura.valores_fatura.mes_ref}  {fatura.valores_fatura.vencimento}  {fatura.valores_fatura.pagar}\n")
+
+for item in fatura.itens_fatura:
+    print(f"{item.nome_item}...{item.unid}...{item.quant}...{item.preco_unit}...{item.valor_total}...{item.pis_cofins}"
+          f"...{item.base_calc_icms}...{item.aliq_icms}...{item.icms}...{item.tarifa_unit}")
+
+
+
+for tributo in fatura.tributos:
+    print(f"{tributo.nome}......{tributo.base_calc}...{tributo.aliquota}...{tributo.valor}")
+print("\n")
+
+for valor in fatura.sumarios_eletricos:
+    print(f"{fatura.medidor.numero_medidor}...{valor.grandeza}...{valor.posto_horario}...{valor.leitura_anterior}"
+          f"...{valor.leitura_atual}..."
+          f"{valor.const_medidor}...{valor.consumo_kwh}")
