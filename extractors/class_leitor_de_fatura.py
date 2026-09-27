@@ -93,6 +93,7 @@ class PdfReader:
         return medidor
 
     _LINHA_RESERVADO = 7
+    _LIMITE_VALOR = 329.2799987792969
     def __valores(self):
         info_medidor = self.__medidor_info()
         medidor_grupo = info_medidor["grupo"]
@@ -101,7 +102,7 @@ class PdfReader:
         medidor_valores = []
         for p in palavras:
             if p[5] == medidor_grupo:
-                if p[6] != self._LINHA_RESERVADO:
+                if p[6] != self._LINHA_RESERVADO and p[0] < self._LIMITE_VALOR:
                     if p[7] != 0:
                         medidor_valores[-1] += ' ' + p[4]
                     else:
