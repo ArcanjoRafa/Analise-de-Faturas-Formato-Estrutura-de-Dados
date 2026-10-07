@@ -2,9 +2,10 @@ from dataclasses import dataclass
 
 @dataclass
 class Leitura:
-    leitura_anterior: str
-    leitura_atual: str
+    l_anterior: str
+    l_atual: str
     dias: str
-    proxima_leitura: str
+    l_proxima: str
     id: int = None
+    fatura_id : int = None
 

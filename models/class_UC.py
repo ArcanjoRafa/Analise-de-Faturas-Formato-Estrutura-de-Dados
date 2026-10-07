@@ -5,4 +5,5 @@ class UnidadeConsumidora:
     endereco : str
     cep : str
     id: int = None
+    client_id : int = None
 

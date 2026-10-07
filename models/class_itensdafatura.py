@@ -13,7 +13,7 @@ class ItemDaFatura:
        icms : str
        tarifa_unit : str
        id: int = None
-
+       fatura_id : str = None
 
 @dataclass
 class ItensTotal:

@@ -75,9 +75,21 @@ class PdfReader:
 
     def extrair_cpf_cnpj(self):
         match = re.search(r"CNPJ/CPF(/RANI)?:\s*([0-9X./-]+)", self.pdf_text)
-        if match:
-            cpf_cnpj = match.group(2)
+        if not match:
+            return None
+
+        cpf_cnpj = match.group(2)
+        if "X" not in cpf_cnpj:
             return cpf_cnpj
+
+        ultimos_dois = cpf_cnpj[-2:]
+        match_limpo = re.search(
+            rf"\d{{3}}\.\d{{3}}\.\d{{3}}-{ultimos_dois}|\d{{2}}\.\d{{3}}\.\d{{3}}/\d{{4}}-{ultimos_dois}",
+            self.pdf_text
+        )
+        if match_limpo:
+            return match_limpo.group(0)
+        return cpf_cnpj
 
     _MED_LOC = (39.0, 579.5043334960938, 69.36003112792969, 584.4683227539062)
     def __medidor_info(self):

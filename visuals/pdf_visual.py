@@ -31,8 +31,8 @@ class Visual:
 
             print(
                 f"{fatura.cliente.nome_cliente}.............................................................................. "
-                f"{fatura.leitura.leitura_anterior} {fatura.leitura.leitura_atual}"
-                f" {fatura.leitura.dias} {fatura.leitura.proxima_leitura}\n")
+                f"{fatura.leitura.l_anterior} {fatura.leitura.l_atual}"
+                f" {fatura.leitura.dias} {fatura.leitura.l_proxima}\n")
             print(f"{fatura.uc.endereco} - {fatura.uc.cep}............... "
                   f"{fatura.uc.numero_uc}\n")
             print(f"{fatura.cliente.cpf_cnpj}\n")
@@ -50,10 +50,10 @@ class Visual:
 
             for valor in fatura.sumarios_eletricos:
                 print(
-                    f"{fatura.medidor.numero_medidor}...{valor.grandeza}...{valor.posto_horario}..."
-                    f"{valor.leitura_anterior}"
-                    f"...{valor.leitura_atual}..."
-                    f"{valor.const_medidor}...{valor.consumo_kwh}")
+                    f"{fatura.medidor.numero_medidor}...{valor.grandeza}...{valor.posto_h}..."
+                    f"{valor.l_anterior}"
+                    f"...{valor.l_atual}..."
+                    f"{valor.const}...{valor.consumo}")
             sleep(1)
             try:
                 resposta = input("DESEJA VISUALIZAR MAIS ALGUM PDF?[S/N]: ").capitalize()[0]
@@ -61,3 +61,7 @@ class Visual:
                     return
             except IndexError:
                 return
+
+    def fatura(self):
+        fatura_escolhida = self.__pdf_escolhido()
+        return fatura_escolhida

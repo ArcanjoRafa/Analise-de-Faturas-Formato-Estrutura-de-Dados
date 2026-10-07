@@ -6,3 +6,5 @@ class ValoresFatura:
     vencimento: str
     pagar: str
     id: int = None
+    uc_id: int = None
+    medidor_id : int = None

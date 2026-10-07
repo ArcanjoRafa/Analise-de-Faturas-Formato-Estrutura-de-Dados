@@ -6,6 +6,7 @@ class Tributo:
     aliquota: str
     valor: str
     id: int = None
+    fatura_id : int = None
 
 
 
