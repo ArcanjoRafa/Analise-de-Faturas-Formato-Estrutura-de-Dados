@@ -79,12 +79,13 @@ class PdfReader:
             return None
 
         cpf_cnpj = match.group(2)
-        if "X" not in cpf_cnpj:
+        if "X" or "*" not in cpf_cnpj:
             return cpf_cnpj
 
         ultimos_dois = cpf_cnpj[-2:]
+        primeiro_digito = cpf_cnpj[0]
         match_limpo = re.search(
-            rf"\d{{3}}\.\d{{3}}\.\d{{3}}-{ultimos_dois}|\d{{2}}\.\d{{3}}\.\d{{3}}/\d{{4}}-{ultimos_dois}",
+            rf"{primeiro_digito}\d{{2}}\.\d{{3}}\.\d{{3}}-{ultimos_dois}|{primeiro_digito}\d{{1}}\.\d{{3}}\.\d{{3}}/\d{{4}}-{ultimos_dois}",
             self.pdf_text
         )
         if match_limpo:

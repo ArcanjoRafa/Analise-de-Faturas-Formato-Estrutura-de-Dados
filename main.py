@@ -9,8 +9,21 @@ path_files = list(dir_path.glob("*.pdf"))
 
 
 pdf = Visual(path_files)
+print(pdf.visualizar_pdf())
 
-fatura_escolhida = pdf.fatura()
+# fatura_escolhida = pdf.fatura()
+
+# session = Session()
+#
+# salvar_fatura(fatura_escolhida, session)
+
+
+"""
+for file in path_files:
+fatura = Fatura(file)
+
 session = Session()
 
-salvar_fatura(fatura_escolhida, session)
+salvar_fatura(fatura, session)
+
+"""

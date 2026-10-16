@@ -14,4 +14,4 @@ class SumarioEletrico:
     consumo : str
     id: int = None
     medidor_id : int = None
-    fatura_id = int = None
+    fatura_id : int = None

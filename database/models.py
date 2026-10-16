@@ -45,7 +45,7 @@ class SumarioEletrico(Base):
     l_anterior : Mapped[Decimal] = mapped_column(Numeric(10,4))
     l_atual : Mapped[Decimal] = mapped_column(Numeric(10,4))
     const : Mapped[Decimal] = mapped_column(Numeric(10,4))
-    consumo :  Mapped[Decimal] = mapped_column(Numeric(10,2))
+    consumo : Mapped[Decimal | None] = mapped_column(Numeric(10, 2), nullable=True)
     medidor_id : Mapped[int] = mapped_column(ForeignKey("medidor.id"))
     fatura_id: Mapped[int] = mapped_column(ForeignKey("fatura.id"))
 
