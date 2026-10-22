@@ -4,6 +4,7 @@ class PdfReaderFormatoB(PdfReader):
     _LOC_CLIENTE = {"x0": 15.720000267028809, "y0": 82.96173095703125}
     _MED_LOC = (20.15999984741211, 577.8538208007812)
     _PALAVRAS_CHAVES = ["PIS/PASEP", "COFINS", "ICMS"]
+    _DATA_APRE_LOC = {"x0": 215.1900634765625, "y0": 666.2974853515625}
 
     _ENDERECO_LOC = {"x0": 15.0, "y0": 99.90929412841797}
     _UC_LOC = {"x0": 188.63999938964844, "y0": 108.62928009033203}
@@ -18,7 +19,7 @@ class PdfReaderFormatoB(PdfReader):
                     endereco += word[4] + " "
                 if word[6] == 1:
                     cep += word[4] + " "
-        return {"endereco": endereco, "cep": cep}
+        return {"endereco": endereco, "cep": cep[3:12].strip()}
 
     def extrair_endereco(self):
         return self.__encontrando_valores()["endereco"]
@@ -48,6 +49,9 @@ class PdfReaderFormatoB(PdfReader):
         pdf_words = self.pdf_words_type2
         return [w[4] for w in pdf_words
                 if abs(w[1] - self._TOTAL_LOC["y0"]) <= 3 and w[0] > self._TOTAL_LOC["x0"]]
+
+    def extrair_tabela_medidor(self):
+        return self._extrair_tabela_medidor_antiga()
 
     def __lista_de_itens(self):
         pdf_words = self.pdf_words_type2

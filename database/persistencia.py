@@ -1,5 +1,6 @@
 from database.models import Cliente, UnidadeConsumidora, Medidor, ValoresFatura, SumarioEletrico, Tributo, Leitura, ItemDaFatura
 from datetime import datetime
+from datetime import date
 from decimal import Decimal
 import re
 
@@ -12,6 +13,13 @@ def para_decimal(texto):
 def para_data(texto):
     return datetime.strptime(texto, "%d/%m/%Y").date()
 
+MESES = {"JAN": 1, "FEV": 2, "MAR": 3, "ABR": 4, "MAI": 5, "JUN": 6,
+         "JUL": 7, "AGO": 8, "SET": 9, "OUT": 10, "NOV": 11, "DEZ": 12}
+
+def para_mes_ref(texto):
+    mes, ano = texto.split("/")
+    return date(int(ano), MESES[mes.strip()[:3].upper()], 1)
+
 
 def salvar_fatura(fatura, session):
     # VERIFICA SE O CLIENTE EXISTE NO BANCO, CASO NAO EXISTA ELE É INSERIDO
@@ -20,8 +28,8 @@ def salvar_fatura(fatura, session):
     else:
         cpf_formatado = re.sub(r"[xX.*]+", "%", fatura.cliente.cpf_cnpj)
         cliente_existe = session.query(Cliente).filter(Cliente.cpf_cnpj.like(cpf_formatado)).first()
-        # if not cliente_existe:
-        #     fatura.cliente.cpf_cnpj = input("Nao foi encontrado cpf/cnpj, por favor ensira manualmente: ")
+        if not cliente_existe:
+             raise Exception("Cliente nao encontrado!")
 
     if cliente_existe:
         cliente_db = cliente_existe
@@ -49,7 +57,8 @@ def salvar_fatura(fatura, session):
         session.add(medidor_db)
         session.commit()
 
-    uc_id_existe = session.query(ValoresFatura).filter_by(uc_id=uc_db.id, mes_ref=fatura.valores_fatura.mes_ref).first()
+    mes_ref = para_mes_ref(fatura.valores_fatura.mes_ref)
+    uc_id_existe = session.query(ValoresFatura).filter_by(uc_id=uc_db.id, mes_ref= mes_ref).first()
     if uc_id_existe:
         print("Fatura ja existe no banco de dados")
         return
@@ -59,7 +68,10 @@ def salvar_fatura(fatura, session):
 
     valorfatura_db = ValoresFatura(valor_total=Decimal(valor),
                                     vencimento=vencimento,
-                                    mes_ref = fatura.valores_fatura.mes_ref,
+                                    mes_ref = mes_ref,
+                                    data_apresentacao=para_data(fatura.valores_fatura.apresentacao)
+                                        if fatura.valores_fatura.apresentacao else None,
+                                    nome_pdf = fatura.nome_pdf,
                                     uc_id=uc_db.id, medidor_id= medidor_db.id)
     session.add(valorfatura_db)
     session.commit()

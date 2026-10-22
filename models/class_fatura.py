@@ -1,4 +1,5 @@
 from models.class_cliente import Cliente
+from pathlib import Path
 from models.class_UC import UnidadeConsumidora
 from models.class_valores_fatura import ValoresFatura
 from models.class_leitura import Leitura
@@ -13,6 +14,7 @@ logging.basicConfig(level=logging.WARNING)
 
 class Fatura:
     def __init__(self, pdf):
+        self.nome_pdf = Path(pdf).stem
         formato = PdfReader.formato(pdf)
         if formato == "A":
             self.pdf = PdfReader(pdf)
@@ -28,6 +30,7 @@ class Fatura:
         pis, cofins, icms = self.pdf.extrair_tributos()
         valor_medidor = self.pdf.extrair_numero_medidor()
         mes_ref, vencimento, pagar = self.pdf.extrair_valores_fatura()
+        apresentacao = self.pdf.extrair_data_apresentacao()
         tabela = self.pdf.extrair_tabela_medidor()
         itens = self.pdf.extrair_itens_fatura()
 
@@ -45,5 +48,5 @@ class Fatura:
                 linha = linha + [None] * (6 - len(linha))
             sumario = SumarioEletrico(*linha)
             self.sumarios_eletricos.append(sumario)
-        self.valores_fatura = ValoresFatura(mes_ref, vencimento, pagar)
-        self.itens_fatura = [ItemDaFatura(*item) for item in itens]
+        self.valores_fatura = ValoresFatura(mes_ref, vencimento, pagar, apresentacao)
+        self.itens_fatura = [ItemDaFatura(*item) for item in itens if "LANÇAMENTOS E SERVIÇOS" not in item]

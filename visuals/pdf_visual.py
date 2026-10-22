@@ -65,3 +65,5 @@ class Visual:
     def fatura(self):
         fatura_escolhida = self.__pdf_escolhido()
         return fatura_escolhida
+
+    

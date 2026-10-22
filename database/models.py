@@ -32,7 +32,9 @@ class ValoresFatura(Base):
     id : Mapped[int] = mapped_column(primary_key=True)
     valor_total : Mapped[Decimal] = mapped_column(Numeric(10,2))
     vencimento : Mapped[date] = mapped_column(Date)
-    mes_ref : Mapped[str] = mapped_column(String(50))
+    mes_ref : Mapped[date] = mapped_column(Date)
+    data_apresentacao: Mapped[date | None] = mapped_column(Date, nullable=True)
+    nome_pdf: Mapped[str | None] = mapped_column(TEXT, nullable=True)
     uc_id : Mapped[int] = mapped_column(ForeignKey("unidadeconsumidora.id"))
     medidor_id : Mapped[int] = mapped_column(ForeignKey("medidor.id"))
 

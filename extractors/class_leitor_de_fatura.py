@@ -74,16 +74,16 @@ class PdfReader:
         return cliente
 
     def extrair_cpf_cnpj(self):
-        match = re.search(r"CNPJ/CPF(/RANI)?:\s*([0-9X./-]+)", self.pdf_text)
+        match = re.search(r"CNPJ/CPF(/RANI)?:\s*([0-9X*./-]+)", self.pdf_text)
         if not match:
             return None
 
         cpf_cnpj = match.group(2)
-        if "X" or "*" not in cpf_cnpj:
+        if "X" not in cpf_cnpj and "*" not in cpf_cnpj:
             return cpf_cnpj
 
         ultimos_dois = cpf_cnpj[-2:]
-        primeiro_digito = cpf_cnpj[0]
+        primeiro_digito = cpf_cnpj[0] if cpf_cnpj[0].isdigit() else r"\d"
         match_limpo = re.search(
             rf"{primeiro_digito}\d{{2}}\.\d{{3}}\.\d{{3}}-{ultimos_dois}|{primeiro_digito}\d{{1}}\.\d{{3}}\.\d{{3}}/\d{{4}}-{ultimos_dois}",
             self.pdf_text
@@ -123,7 +123,7 @@ class PdfReader:
                             medidor_valores.append(p[4])
         return medidor_valores
 
-    def extrair_tabela_medidor(self):
+    def _extrair_tabela_medidor_antiga(self):
         valores = self.__valores()
         tabela = []
         inicio = 0
@@ -132,6 +132,59 @@ class PdfReader:
             tabela.append(valores[inicio: final])
             inicio = final
             final += 6
+        return tabela
+
+    _COLUNAS_MEDIDOR = {
+        "grandeza": (75, 141),
+        "posto_h": (141, 176),
+        "l_anterior": (176, 218),
+        "l_atual": (218, 255),
+        "const": (255, 280),
+        "consumo": (280, 320),
+    }
+    _TOLERANCIA_LINHA = 3
+    _SALTO_FIM_TABELA = 15
+
+    def extrair_tabela_medidor(self):
+        x_min = min(inicio for inicio, _ in self._COLUNAS_MEDIDOR.values())
+        x_max = max(fim for _, fim in self._COLUNAS_MEDIDOR.values())
+        y_inicio = self._MED_LOC[1] - self._TOLERANCIA_LINHA
+
+
+        palavras = [p for p in self.pdf_words_type2
+                    if p[1] >= y_inicio and x_min <= (p[0] + p[2]) / 2 < x_max]
+        palavras.sort(key=lambda p: p[1])
+
+        linhas = []
+        y_linha = None
+        y_anterior = None
+        for p in palavras:
+            if y_anterior is not None and p[1] - y_anterior > self._SALTO_FIM_TABELA:
+                break
+            if y_linha is None or p[1] - y_linha > self._TOLERANCIA_LINHA:
+                linhas.append([])
+                y_linha = p[1]
+            linhas[-1].append(p)
+            y_anterior = p[1]
+
+        tabela = []
+        for linha in linhas:
+            celulas = {coluna: [] for coluna in self._COLUNAS_MEDIDOR}
+            for p in sorted(linha, key=lambda p: p[0]):
+                x_meio = (p[0] + p[2]) / 2
+                for coluna, (inicio, fim) in self._COLUNAS_MEDIDOR.items():
+                    if inicio <= x_meio < fim:
+                        celulas[coluna].append(p[4])
+                        break
+            tabela.append([" ".join(textos) for textos in celulas.values()])
+
+        consts = [linha[4] for linha in tabela if linha[4]]
+        if consts:
+            const = max(set(consts), key=consts.count)
+            for linha in tabela:
+                resto = linha[5][len(const):]
+                if not linha[4] and linha[5].startswith(const) and resto[:1].isdigit():
+                    linha[4], linha[5] = const, resto
         return tabela
 
     _NOMES_LEITURAS = ['leitura anterior:', 'leitura atual:', 'n dias:', 'proxima leitura:']
@@ -171,6 +224,11 @@ class PdfReader:
         texto = self.pdf_text
         match = re.search(r'([A-Za-zÀ-ÿ]+\s*/\s*\d{4})\s+(\d{2}/\d{2}/\d{4})\s+R\$\s*([\d.]+,\d{2})', texto)
         if match:
+            #altera o formato do mes ref para uma formato de data  ex: MAI/2026 -> 01/05/2026
+            # fazer uma lista dos meses
+            # conferir se mes_ref esta na lista
+            # se tiver, pegar o indice onde ele esta na lista
+            # e jogar para o formato desejado
             valores_fat = {
                 "MES_REF": match.group(1),
                 "VENCIMENTO": match.group(2),
@@ -285,3 +343,14 @@ class PdfReader:
 
     def itens_num(self):
         return len(self.itens_fatura())
+
+    _DATA_APRE_LOC = {"x0": 419.6938171386719, "y0": 95.9293212890625}
+
+    def extrair_data_apresentacao(self):
+        x0, y0 = self._DATA_APRE_LOC["x0"], self._DATA_APRE_LOC["y0"]
+        for w in sorted(self.pdf_words_type2, key=lambda w: w[0]):
+            if abs(w[1] - y0) <= 3 and w[0] >= x0 - 10:
+                achado = re.search(r"\d{2}/\d{2}/\d{4}", w[4])
+                if achado:
+                    return achado.group(0)
+        return None
