@@ -1,0 +1,510 @@
+/* Estilo da página de upload de faturas — aplicação local, sem frameworks. */
+
+:root {
+    --fundo: #faf7f2;
+    --superficie: #ffffff;
+    --cabecalho-tabela: #f3ece0;
+    --borda: #e7e0d4;
+    --texto: #26221c;
+    --texto-suave: #776f61;
+
+    --ambar: #ffb03a;           /* cor que acompanha o laranja no gradiente */
+    --laranja: #f26a0d;
+    --laranja-escuro: #c95200;
+    --laranja-claro: #fff1e4;
+
+    --verde: #1a7f37;     --verde-claro: #e6f6ec;
+    --amarelo: #9a6700;   --amarelo-claro: #fff4d6;
+    --vermelho: #cf222e;  --vermelho-claro: #fde8e8;
+    --sombra: rgba(0, 0, 0, .15);
+}
+
+:root[data-tema="escuro"] {
+    --fundo: #1c1a17;
+    --superficie: #262320;
+    --cabecalho-tabela: #2e2922;
+    --borda: #3c3730;
+    --texto: #f0ebe3;
+    --texto-suave: #a59e93;
+
+    --ambar: #ffc061;
+    --laranja: #ff7b1f;
+    --laranja-escuro: #d95f00;
+    --laranja-claro: #3a2a17;
+
+    --verde: #57d977;     --verde-claro: #16331e;
+    --amarelo: #ffcc66;   --amarelo-claro: #3a2f10;
+    --vermelho: #ff8087;  --vermelho-claro: #3d1418;
+    --sombra: rgba(0, 0, 0, .5);
+}
+
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    display: flex;
+    min-height: 100vh;
+    font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+    background: var(--fundo);
+    color: var(--texto);
+}
+
+.container {
+    flex: 1;
+    min-width: 0;
+    max-width: 980px;
+    margin: 32px auto;
+    padding: 0 32px;
+}
+
+h1 { font-size: 26px; margin: 0 0 20px; }
+
+/* ícones em linha (outline) ao lado do título alinham pela base do texto */
+h1 svg { vertical-align: -4px; }
+
+/* --- área de upload --- */
+
+.area-upload {
+    border: 2px dashed var(--borda);
+    border-radius: 10px;
+    background: var(--superficie);
+    padding: 36px 16px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color .15s ease, background-color .15s ease;
+    user-select: none;
+}
+
+.area-upload:hover,
+.area-upload:focus-visible {
+    border-color: var(--laranja);
+    outline: none;
+}
+
+/* destaque enquanto o arquivo é arrastado por cima (dragover) */
+.area-upload.arrastando {
+    border-color: var(--laranja);
+    background: var(--laranja-claro);
+}
+
+.area-texto { margin: 8px 0 4px; font-size: 16px; font-weight: 600; }
+.area-dica { margin: 0; font-size: 13px; color: var(--texto-suave); }
+
+/* recusa inline de arquivos que não são .pdf */
+.aviso {
+    color: var(--vermelho);
+    font-size: 14px;
+    margin: 10px 2px 0;
+}
+
+/* --- nome do arquivo + botões --- */
+
+.selecao {
+    display: flex;
+    align-items: flex-end;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.nome-arquivo {
+    flex: 1;
+    min-width: 200px;
+    margin: 6px 0;
+    font-weight: 600;
+    word-break: break-all;
+}
+
+/* botões à direita, um pouco abaixo do nome */
+.botoes { display: flex; gap: 8px; margin-top: 10px; }
+
+.botao {
+    padding: 8px 18px;
+    border-radius: 8px;
+    border: 1px solid var(--borda);
+    background: var(--superficie);
+    color: var(--texto);
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color .15s ease, filter .15s ease, box-shadow .15s ease;
+}
+
+.botao:hover:not(:disabled) { background: var(--cabecalho-tabela); }
+
+/* botão principal: gradiente laranja com âmbar */
+.botao.primario {
+    background: linear-gradient(135deg, var(--ambar), var(--laranja));
+    border: none;
+    color: #fff;
+    font-weight: 700;
+    box-shadow: 0 2px 10px rgba(242, 106, 13, .35);
+}
+
+.botao.primario:hover:not(:disabled) {
+    filter: brightness(1.07);
+    box-shadow: 0 3px 12px rgba(242, 106, 13, .45);
+}
+
+.botao:disabled {
+    opacity: .45;
+    cursor: not-allowed;
+}
+
+/* --- histórico --- */
+
+.historico { margin-top: 36px; }
+
+h2 { font-size: 19px; margin: 0 0 12px; }
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--superficie);
+    border: 1px solid var(--borda);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+th, td {
+    padding: 10px 12px;
+    text-align: left;
+    font-size: 14px;
+    border-bottom: 1px solid var(--borda);
+    word-break: break-all;
+}
+
+th {
+    background: var(--cabecalho-tabela);
+    font-size: 11px;                 /* colunas um pouco menores */
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    color: var(--texto-suave);
+}
+
+tbody tr:last-child td { border-bottom: none; }
+
+.col-erro { color: var(--vermelho); max-width: 320px; }
+
+/* badges de status */
+.badge {
+    display: inline-block;
+    padding: 3px 12px;
+    border-radius: 999px;
+    font-size: 11px;                /* mesmo tamanho dos títulos das colunas */
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.status-SUCESSO   { background: var(--verde-claro);   color: var(--verde); }
+.status-DUPLICADO { background: var(--amarelo-claro); color: var(--amarelo); }
+.status-FALHA     { background: var(--vermelho-claro); color: var(--vermelho); }
+.status-RECUSADO  { background: var(--vermelho-claro); color: var(--vermelho); }
+
+.sem-linhas { color: var(--texto-suave); text-align: center; }
+
+/* botão de download (ícone) da coluna Ação */
+.botao-download {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    color: var(--laranja);
+}
+.botao-download:hover { background: var(--laranja-claro); }
+
+/* --- toast do resultado --- */
+
+.toast {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    max-width: 420px;
+    padding: 12px 18px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    box-shadow: 0 6px 24px var(--sombra);
+    z-index: 100;
+}
+
+.toast.SUCESSO   { background: var(--verde-claro);   color: var(--verde);   border: 1px solid var(--verde); }
+.toast.DUPLICADO { background: var(--amarelo-claro); color: var(--amarelo); border: 1px solid var(--amarelo); }
+.toast.FALHA,
+.toast.RECUSADO  { background: var(--vermelho-claro); color: var(--vermelho); border: 1px solid var(--vermelho); }
+
+/* --- menu lateral (sidebar) com hamburguer --- */
+
+.sidebar {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    flex-shrink: 0;
+    width: 220px;
+    padding: 14px 10px;
+    background: var(--superficie);
+    border-right: 1px solid var(--borda);
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    overflow: hidden;
+    transition: width .2s ease, padding .2s ease;
+    z-index: 10;
+}
+
+.sidebar.recolhida { width: 64px; }
+
+/* botão de hamburguer: expande e recolhe o menu */
+.hamburger {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 10px;
+    background: transparent;
+    color: var(--texto);
+    cursor: pointer;
+    transition: background-color .15s ease, color .15s ease;
+}
+
+.hamburger:hover { background: var(--laranja-claro); color: var(--laranja); }
+
+.sidebar.recolhida .hamburger { justify-content: center; padding: 8px 0; }
+
+.sidebar-nav { display: flex; flex-direction: column; gap: 6px; }
+
+.sidebar-nav a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 14px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--texto-suave);
+    white-space: nowrap;
+    transition: color .15s ease, background-color .15s ease;
+}
+
+.sidebar-nav a:hover { color: var(--laranja); background: var(--laranja-claro); }
+
+.sidebar-nav a.ativa {
+    color: #fff;
+    background: linear-gradient(135deg, var(--ambar), var(--laranja));
+    box-shadow: 0 2px 10px rgba(242, 106, 13, .35);
+}
+
+/* recolhida: só os emojis/ícones, centralizados */
+.sidebar.recolhida .sidebar-nav a { justify-content: center; padding: 11px 0; }
+
+.sidebar-nav .icone { display: inline-flex; flex-shrink: 0; }
+
+.sidebar .rotulo { transition: opacity .15s ease; }
+
+.sidebar.recolhida .rotulo { display: none; }
+
+/* --- página de configurações --- */
+
+.card {
+    background: var(--superficie);
+    border: 1px solid var(--borda);
+    border-radius: 10px;
+    padding: 20px 24px;
+}
+
+.card h2 { margin: 0 0 6px; }
+
+.config-dica { margin: 0 0 18px; color: var(--texto-suave); font-size: 14px; }
+
+/* alternador de tema: pílula com as opções Sol e Lua */
+.alternador {
+    display: inline-flex;
+    border: 1px solid var(--borda);
+    border-radius: 999px;
+    overflow: hidden;
+    background: var(--superficie);
+}
+
+.alternador .alternador-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 24px;
+    border: none;
+    background: transparent;
+    color: var(--texto-suave);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color .15s ease, color .15s ease;
+}
+
+.alternador .alternador-item.ativo {
+    background: linear-gradient(135deg, var(--ambar), var(--laranja));
+    color: #fff;
+    font-weight: 700;
+}
+
+/* --- gestão de clientes: barra de topo (busca + botão criar) --- */
+.acao-topo {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin: 0 0 16px;
+    justify-content: space-between;
+}
+.acao-topo input[type="text"] {
+    width: 260px;
+    padding: 8px 12px;
+    border: 1px solid var(--borda);
+    border-radius: 8px;
+    background: var(--superficie);
+    color: var(--texto);
+    font-size: 14px;
+}
+.acao-topo input[type="text"]:focus {
+    outline: none;
+    border-color: var(--laranja);
+}
+
+/* --- gestão de clientes: layout duas colunas (filtro lateral + conteúdo) --- */
+.layout-clientes {
+    display: flex;
+    gap: 0;
+    align-items: stretch;
+    flex-wrap: nowrap;
+}
+.conteudo-principal {
+    flex: 1;
+    min-width: 0;
+    padding-left: 24px;
+}
+
+/* --- gestão de clientes: filtro lateral por documento (apenas CPF/CNPJ) --- */
+.filtro-lateral {
+    width: 260px;
+    flex-shrink: 0;
+    margin: 0;
+    padding: 16px 24px 16px 20px;
+    background: var(--superficie);
+    border: 1px solid var(--borda);
+    border-right: 1px solid var(--borda);
+    border-radius: 10px 0 0 10px;
+}
+.filtro-lateral h3 {
+    margin: 0 0 8px;
+    font-size: 16px;
+    color: var(--texto);
+}
+.filtro-dica {
+    margin: 0 0 10px;
+    color: var(--texto-suave);
+    font-size: 13px;
+}
+#lista-documentos {
+    max-height: 260px;
+    overflow-y: auto;
+    border: 1px solid var(--borda);
+    border-radius: 8px;
+    padding: 8px;
+    background: var(--fundo);
+}
+#lista-documentos label {
+    display: block;
+    cursor: pointer;
+    font-size: 14px;
+    color: var(--texto);
+    margin-bottom: 6px;
+}
+#lista-documentos input[type="checkbox"] {
+    margin-right: 8px;
+    accent-color: var(--laranja);
+}
+#lista-documentos label:hover {
+    background: var(--laranja-claro);
+    border-radius: 6px;
+    padding: 4px 6px;
+}
+
+/* --- gestão de clientes: modal --- */
+.modal {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.modal[hidden] {
+    display: none;
+}
+.modal-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.35);
+    backdrop-filter: blur(2px);
+}
+.modal-box {
+    position: relative;
+    background: var(--superficie);
+    border: 1px solid var(--borda);
+    border-radius: 10px;
+    padding: 24px;
+    width: min(420px, 90vw);
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 6px 24px var(--sombra);
+}
+.modal-box h2 {
+    margin: 0 0 16px;
+    font-size: 20px;
+}
+.modal-box label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    margin: 0 0 6px;
+    color: var(--texto-suave);
+}
+.modal-box input[type="text"] {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid var(--borda);
+    border-radius: 8px;
+    background: var(--superficie);
+    color: var(--texto);
+    font-size: 14px;
+    margin-bottom: 14px;
+}
+.modal-box input[type="text"]:focus {
+    outline: none;
+    border-color: var(--laranja);
+}
+.modal-botoes {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+    margin-top: 4px;
+}
+
+/* botão de excluir na tabela */
+.botao-excluir {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    border: 1px solid var(--borda);
+    background: var(--superficie);
+    color: var(--texto);
+    cursor: pointer;
+}
+.botao-excluir:hover {
+    background: var(--vermelho-claro);
+    color: var(--vermelho);
+}

@@ -85,7 +85,7 @@ class ItemDaFatura(Base):
     aliq_icms : Mapped[Decimal | None] = mapped_column(Numeric(10,2), nullable=True)
     icms : Mapped[Decimal | None] = mapped_column(Numeric(10,2), nullable=True)
     tarifa_unit : Mapped[Decimal | None] = mapped_column(Numeric(10,4), nullable=True)
-    fatura_id : Mapped[int] = mapped_column(ForeignKey("fatura.id"))
+    fatura_id: Mapped[int] = mapped_column(ForeignKey("fatura.id"))
 
 
 

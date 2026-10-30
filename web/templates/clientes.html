@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestao de Clientes</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/upload.css') }}">
+    <script src="{{ url_for('static', filename='js/tema.js') }}"></script>
+</head>
+<body>
+    <aside class="sidebar" id="sidebar">
+        <button type="button" class="hamburger" id="botao-menu"
+                aria-label="Expandir ou recolher o menu">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor"
+                 stroke-width="2" stroke-linecap="round" aria-hidden="true">
+                <path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h16"/>
+            </svg>
+        </button>
+        <nav class="sidebar-nav">
+            <a href="/"><span class="icone" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3"/><path d="M7 8l5-5 5 5"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg></span><span class="rotulo">Upload</span></a>
+            <a href="/configuracoes"><span class="icone" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg></span><span class="rotulo">Configurações</span></a>
+            <a href="/clientes" class="ativa"><span class="icone" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span><span class="rotulo">Clientes</span></a>
+            <a href="/auditoria"><span class="icone" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 4 8 8 8 8z"/></svg></span><span class="rotulo">Auditoria</span></a>
+        </nav>
+    </aside>
+
+    <main class="container">
+        <h1><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> Gestao de Clientes</h1>
+
+        <div id="toast" class="toast" hidden></div>
+
+        <div class="layout-clientes">
+            <!-- Filtro lateral: CPF/CNPJ existentes com checkbox -->
+            <aside class="filtro-lateral">
+                <h3>Filtrar por documento</h3>
+                <p class="filtro-dica">Marque um ou mais CPF/CNPJ.</p>
+                <div id="lista-documentos"></div>
+            </aside>
+
+            <!-- Conteúdo principal: busca e tabela -->
+            <section class="conteudo-principal">
+                <div class="acao-topo">
+                    <input type="text" id="campo-busca" placeholder="Buscar por nome ou CPF/CNPJ">
+                    <button type="button" id="botao-criar" class="botao primario">Criar Cliente</button>
+                </div>
+
+                <section class="tabela-clientes">
+                    <table id="tabela-clientes">
+                        <thead>
+                            <tr>
+                                <th>Nome do Titular</th>
+                                <th>Documento CPF/CNPJ</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="corpo-clientes"></tbody>
+                    </table>
+                </section>
+            </section>
+        </div>
+    </main>
+
+    <div id="modal" class="modal" hidden>
+        <div class="modal-overlay" id="modal-overlay"></div>
+        <div class="modal-box">
+            <h2>Novo cliente</h2>
+            <label for="modal-nome">Nome</label>
+            <input type="text" id="modal-nome" placeholder="Nome do titular">
+            <label for="modal-documento">CPF/CNPJ</label>
+            <input type="text" id="modal-documento" placeholder="CPF/CNPJ">
+            <p id="modal-erro" class="aviso" hidden></p>
+            <div class="modal-botoes">
+                <button type="button" id="modal-cancelar" class="botao">Cancelar</button>
+                <button type="button" id="modal-criar" class="botao primario">Criar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/menu.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/clientes.js') }}"></script>
+</body>
+</html>

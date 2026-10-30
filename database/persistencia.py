@@ -61,7 +61,7 @@ def salvar_fatura(fatura, session):
     uc_id_existe = session.query(ValoresFatura).filter_by(uc_id=uc_db.id, mes_ref= mes_ref).first()
     if uc_id_existe:
         print("Fatura ja existe no banco de dados")
-        return
+        return ("DUPLICADO", None)
 
     valor = para_decimal(fatura.valores_fatura.pagar)
     vencimento = para_data(fatura.valores_fatura.vencimento)
@@ -128,3 +128,4 @@ def salvar_fatura(fatura, session):
         session.add(item_db)
 
     session.commit()
+    return ("SUCESSO", valorfatura_db.id)

@@ -1,0 +1,114 @@
+/* Estilos específicos da página de Auditoria de Faturas.
+   Reutiliza as variáveis e componentes de upload.css (cores, fonte, tema). */
+
+/* Bloco InvoiceFilters: todos os filtros em uma mesma linha, mesma largura da tabela */
+.invoice-filters {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 12px;
+    align-items: flex-start;
+    background: var(--superficie);
+    border: 1px solid var(--borda);
+    border-radius: 10px;
+    padding: 12px 16px;
+    margin: 0 0 24px;
+    width: 100%;
+}
+
+.invoice-filters .filtro-campo {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 1 1 0;
+    min-width: 0;
+}
+
+.invoice-filters .filtro-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--texto-suave);
+    margin: 0;
+}
+
+.invoice-filters select,
+.invoice-filters input[type="month"] {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid var(--borda);
+    border-radius: 8px;
+    background: var(--superficie);
+    color: var(--texto);
+    font-size: 14px;
+    font-family: inherit;
+}
+
+.invoice-filters select:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.invoice-filters select:focus,
+.invoice-filters input[type="month"]:focus {
+    outline: none;
+    border-color: var(--laranja);
+}
+
+/* placeholder dos date pickers com a cor dos títulos dos filtros */
+.invoice-filters input[type="month"]::placeholder {
+    color: var(--texto-suave);
+    opacity: 1;
+}
+
+/* Tabela de resultados: largura total e títulos em uma linha reta */
+.resultados-faturas table {
+    margin-top: 8px;
+    width: 100%;
+    max-width: 100%;
+}
+
+.resultados-faturas th {
+    white-space: nowrap;
+}
+
+/* Número UC nunca quebra */
+.resultados-faturas td.col-uc {
+    white-space: nowrap;
+}
+
+/* Nome do cliente quebrado naturalmente (igual à página de Clientes - herda word-break: break-all do upload.css) */
+.resultados-faturas td.col-cliente {
+    white-space: normal;
+    word-break: break-all;
+}
+
+.resultados-faturas tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Linha de vazio ("Nenhuma fatura encontrada") reaproveita a classe sem-linhas do upload.css */
+
+/* Indicador de status na coluna Status */
+.status-indicador {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 6px;
+    white-space: nowrap;
+}
+
+.icone-status {
+    font-size: 14px;
+}
+
+.status-validado {
+    color: var(--verde);
+    background: var(--verde-claro);
+}
+
+.status-analise {
+    color: #b45309;      /* amarelo queimado */
+    background: #fef3c7; /* fundo amarelo claro */
+}
